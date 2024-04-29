@@ -30,6 +30,7 @@ jobs:
         echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
         echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
         echo "${{ secrets.ANSIBLE_VAULT_PWD }}" | base64 -d > vault_pwd.txt
+        echo "ANSIBLE_VAULT_PWD=${{ secrets.ANSIBLE_VAULT_PWD }}" >> .env
 
     - name: Start services
       run: docker-compose up -d
