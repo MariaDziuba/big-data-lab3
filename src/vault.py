@@ -7,6 +7,14 @@ cur_dir = path.Path(__file__).absolute()
 sys.path.append(cur_dir.parent.parent)
 from typing import Dict
 
+class AnsibleVaultError(Exception):
+    def __init__(self, comment):
+        self.comment = comment
+    
+    def __str__(self):
+        return self.comment
+        
+
 class AnsibleVault:
     secrets: Dict = None
 
@@ -23,7 +31,10 @@ class AnsibleVault:
         return self.secrets
     
     def get_secret(self, name: str):
-        return self.secrets[name]
+        try:
+            return self.secrets[name]
+        except KeyError:
+            raise AnsibleVaultError(f"Secret with name {name} does not exist in the vault")
 
 
 if __name__ == '__main__':
