@@ -19,10 +19,8 @@ class Validator:
             db: Database,
             val_table: str,
             metrics_table: str,
-            # path_to_val_data: str, 
             path_to_model_ckpt: str, 
             path_to_vectorizer_ckpt: str, 
-            # path_to_metrics: str
     ):
         clf = load_ckpt(path_to_model_ckpt)
         preprocessor = Preprocessor()
@@ -44,4 +42,3 @@ class Validator:
         metrics_df = pd.DataFrame({"Id": [ _ for _ in range(len(metrics))], "Metric": metrics_list, "Value": values_list})
         print(metrics_df)
         db.insert_df(metrics_table, metrics_df)
-        # metrics_df.to_csv(path_to_metrics, index=False)

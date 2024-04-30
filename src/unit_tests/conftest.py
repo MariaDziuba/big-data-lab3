@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 import pytest
-import shutil
 import path
 import sys
 cur_dir = path.Path(__file__).absolute()
@@ -14,9 +13,8 @@ from src.vault import AnsibleVault
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
 vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
-ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+ansible_vault = AnsibleVault(vault_file)
 
 db = Database(ansible_vault)
 
@@ -27,18 +25,14 @@ def run_around_tests():
 
     db.create_database("lab2_bd")
 
-
     path_to_train_data = os.path.join(cur_dir.parent.parent.parent, config['data']['path_to_train_data'])
-
-    # path_to_tmp_val_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_val_data'])
-    # path_to_tmp_test_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_test_data'])
 
     test_df = pd.DataFrame({
         "ArticleId": [1, 2],
         "Text": ["Business is good!", "Football is a popular sport"],
         "Category": ["business", "sport"]
     })
-    # test_df.to_csv(path_to_tmp_test_data, index=False)
+
     db.create_table('tmp_test', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
     db.insert_df("tmp_test", test_df)
 
@@ -76,7 +70,7 @@ def run_around_tests():
 
     db.create_table('tmp_submission', {'ArticleId': 'UInt32', 'Category': 'String'})
     db.create_table('tmp_metrics', {'Id': 'UInt32', 'Metric': 'String', 'Value': 'Float64'})
-    # val_df.to_csv(path_to_tmp_val_data, index=False)
+
     yield
     # after tests:
     db.drop_table("tmp_test")
@@ -85,4 +79,3 @@ def run_around_tests():
     db.drop_table("tmp_submission")
     db.drop_table("tmp_metrics")
     db.drop_database("lab2_bd")
-    # shutil.rmtree(tmp_dir)
