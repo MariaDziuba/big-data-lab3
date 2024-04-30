@@ -19,9 +19,8 @@ from src.vault import AnsibleVault
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
 vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
-ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+ansible_vault = AnsibleVault(vault_file)
 
 db = Database(ansible_vault)
 db.create_table('tmp_test', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
@@ -30,10 +29,8 @@ db.create_table('tmp_submission', {'ArticleId': 'UInt32', 'Category': 'String'})
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-# path_to_test_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_app_test_data'])
 path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
 path_to_model_ckpt = os.path.join(cur_dir.parent.parent.parent, config['model']['path_to_model_ckpt'])
-# path_to_submission = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_app_submission'])
 
 model = load_ckpt(path_to_model_ckpt)
 vectorizer = load_ckpt(path_to_vectorizer_ckpt)
@@ -49,7 +46,6 @@ async def predict(input_data: InputData):
         df = pd.DataFrame(input_data.X)
         db.insert_df("tmp_test", df)
 
-        # df.to_csv(path_to_test_data)
         predictor = Predictor()
         predictor.predict(db, "tmp_submission", "tmp_test", path_to_model_ckpt, path_to_vectorizer_ckpt)
         

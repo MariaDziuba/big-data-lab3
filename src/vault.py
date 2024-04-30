@@ -18,9 +18,7 @@ class AnsibleVaultError(Exception):
 class AnsibleVault:
     secrets: Dict = None
 
-    def __init__(self, pwd_file: str, vault_file: str):
-        # with open(pwd_file) as f:
-            # self.vault = Vault(f.read())
+    def __init__(self, vault_file: str):
         self.vault = Vault(os.getenv('ANSIBLE_VAULT_PWD'))
         self.vault_file = vault_file     
 
